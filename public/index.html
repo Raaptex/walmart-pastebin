@@ -4,14 +4,27 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PasteBin from walmart</title>
+
+    <meta content="Walmart-Bin" property="og:title" />
+    <meta content="better than dpaste!!!!!" property="og:description" />
+
+    <title>Walmart-Bin</title>
     <link rel="stylesheet" href="/assets/index.css">
 </head>
 <body>
     <form id="form" method="POST" action="/paste">
-        <textarea required="required" id="pasteContent" class="text" name="pasteContent" spellcheck="false"></textarea>
         <button>Submit</button>
+        <select name="pasteExpiration">
+            <option value="onetime">One time use</option>
+            <option value="never">Never expire</option>
+        </select>
+        <textarea required="required" id="pasteContent" class="text" name="pasteContent" spellcheck="false"></textarea>
     </form>
 
+    <script>document.getElementById("pasteContent").innerHTML = "";</script>
+
+    <footer class="footer">
+        Better than dpaste&#8482;
+    </footer>
 </body>
 </html>

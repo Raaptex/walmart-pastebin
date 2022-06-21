@@ -3,7 +3,6 @@ const fs = require("fs")
 const app = express();
 app.use(express.urlencoded({extended:true})) //magic
 const hashmap = require('hashmap');
-const pastes = new hashmap();
 require("dotenv").config(".env")
 
 app.get("/", (req, res) => {
@@ -15,61 +14,54 @@ function makeid(length) {
     var characters       = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     var charactersLength = characters.length;
     for ( var i = 0; i < length; i++ ) {
-        result += characters.charAt(Math.floor(Math.random() * 
-        charactersLength));
+        result += characters.charAt(Math.floor(Math.random() * charactersLength));
     }
     return result;
 }
 
 app.post("/paste", (req, res) => {
     if(req.body === null){
-        return res.send("error")
+        return res.send("error");
     }
     if(req.body.pasteContent === null){
-        return res.send("error")
+        return res.send("error");
+    }
+    if(req.body.pasteExpiration === null){
+        return res.send("error");
     }
     let url = makeid(5);
-    pastes.set(url, req.body.pasteContent);
-    res.redirect("/" + url);
-    save()
-    
-
-
+    let data = {
+        url: url,
+        content: req.body.pasteContent,
+        expiration: req.body.pasteExpiration,
+        visit:0
+    }
+    fs.writeFile(__dirname + '/pastes/' + url, JSON.stringify(data), function (err,data) {
+        if (err) {
+            res.send("error")
+            return console.log(err); 
+        }
+        res.redirect("/" + url);
+    });
+   
 });
 
 
-function save(){
-    to_save = [] //empty?
-    pastes.forEach((value, key) => {
-        to_save.push({
-            url:key,
-            value: value
-        })
-    })
-
-    fs.writeFileSync("config.json", JSON.stringify(to_save))
-}
-
-function load(){
-    if(!fs.existsSync("config.json"))
-        return;
-    
-    const config = JSON.parse(fs.readFileSync("config.json"))
-    //loop through all elements of config using forEach
-    config.forEach((value) => {
-        pastes.set(value.url, value.value);
-    });
-
-}
-
-//sqfqsfq
-
 app.get("/:url", (req, res) => {
-    if(pastes.has(req.params.url)){
-        res.type('text/plain');
-        res.send(pastes.get(req.params.url))
+    res.type("text/plain");
+    let path = __dirname + "/pastes/" + req.params.url
+    if(fs.existsSync(path)) {
+        let data = JSON.parse(fs.readFileSync(path))
+        res.send(data.content);
+        data.visit += 1;
+        fs.writeFileSync(path, JSON.stringify(data));
+        if(data.expiration == "onetime"){
+            if(data.visit > 1) {
+                fs.unlinkSync(path);
+            }
+        }       
     }else{
-        res.send("This paste doesn't exist")
+        res.send("This paste doesn't exist");
     }
 })
 
@@ -78,6 +70,5 @@ app.get("/assets/:name", (req, res) => {
 });
 
 app.listen(process.env.port, () => {
-    load();
     console.log("Uploaded on port " + process.env.port);
 });
