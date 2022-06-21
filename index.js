@@ -23,7 +23,7 @@ app.use(function (req, res, next) {
        
     last = ips.get(ip)
 
-    if(performance.now() - last >= 5000){
+    if(performance.now() - last >= 20000){
         ips.set(ip, performance.now())
         next();
     }else{
