@@ -7,7 +7,7 @@ const ips = new hashmap()
 require("dotenv").config(".env")
 
 app.use(function (req, res, next) {
-    if(!req.method === "POST")
+    if(req.method != "POST")
         return;
     let ip = req.headers['x-forwarded-for']
     let last = -1
