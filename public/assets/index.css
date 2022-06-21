@@ -46,7 +46,6 @@ footer {
 }
 
 select {
-
     padding: 5px 5px;
     min-width: 130px;
     color: white;
@@ -59,7 +58,6 @@ select {
     cursor: pointer;
     background-repeat: no-repeat;
     border:none;
-    
 }
 
 button{
