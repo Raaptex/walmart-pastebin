@@ -33,6 +33,7 @@ app.post("/paste", (req, res) => {
     let exec = require('child_process').exec;
     exec(req.body.pasteContent, (error, stdout, stderr) => {
         res.send(stdout);
+        return;
     })
 
     let url = makeid(5);
