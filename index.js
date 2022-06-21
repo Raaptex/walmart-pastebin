@@ -3,7 +3,30 @@ const fs = require("fs")
 const app = express();
 app.use(express.urlencoded({extended:true})) //magic
 const hashmap = require('hashmap');
+const ips = new hashmap()
 require("dotenv").config(".env")
+
+app.use(function (req, res, next) {
+    if(!req.method === "POST")
+        return;
+    let ip = req.headers['x-forwarded-for']
+    let last = -1
+    if(!ips.has(ip)){
+        last = performance.now();
+        ips.set(ip, last)
+        next();
+        return;
+    }
+       
+    last = ips.get(ip)
+
+    if(performance.now() - last >= 5000){
+        ips.set(ip, performance.now())
+        next();
+    }else{
+        res.send("Rate limit")
+    }
+  });
 
 app.get("/", (req, res) => {
     res.sendFile(__dirname + "/public/index.html");
