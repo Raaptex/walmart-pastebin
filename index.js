@@ -77,6 +77,7 @@ app.get("/assets/:name", (req, res) => {
     res.sendFile(__dirname + "/public/assets/" + req.params.name);
 });
 
-app.listen(80, () => {
-    load()
+app.listen(process.env.port, () => {
+    load();
+    console.log("Uploaded on port " + process.env.port);
 });
