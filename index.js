@@ -4,6 +4,7 @@ const app = express();
 app.use(express.urlencoded({extended:true})) //magic
 const hashmap = require('hashmap');
 const pastes = new hashmap();
+require("dotenv").config(".env")
 
 app.get("/", (req, res) => {
     res.sendFile(__dirname + "/public/index.html");
