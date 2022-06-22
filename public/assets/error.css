@@ -1,0 +1,44 @@
+body{
+    background-color: #333;
+    font-family: Consolas, monaco, monospace;
+    color:white;
+}
+
+.errorBox{
+    background-color: #222;
+    border-radius: 12px;
+    min-width: 30%;
+    min-height: 30%;
+    text-align: center;
+}
+
+.errorTitle{
+    font-size: 32px;
+    margin-bottom: 25px;
+    margin-top: 5px;
+    color: #ff5555;
+}
+
+.errorText{
+    font-size: 24px;
+    position:fixed;
+    left:15%;
+    right:15%;
+    top: 47%;
+    color:white;
+}   
+
+.errorHome{
+    position:fixed;
+    right:5px;
+    bottom: 5px;
+    text-decoration: none;
+    color:inherit;
+    transition-duration: 0.4s;
+
+}
+
+.errorHome:hover{
+    color:rgb(200, 200, 200);
+    transition-duration: 0.4s;
+}

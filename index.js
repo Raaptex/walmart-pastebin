@@ -82,6 +82,11 @@ app.post("/paste", (req, res) => {
    
 });
 
+function sendError(res, error){
+    let template = fs.readFileSync(__dirname + "/public/error.html").toString();
+    template = template.replace("{error}", error);
+    res.send(template);
+}
 
 app.get("/raw/:url", (req, res) => {
     res.type("text/plain");
@@ -97,7 +102,7 @@ app.get("/raw/:url", (req, res) => {
             }
         }       
     }else{
-        res.send("This paste doesn't exist");
+       sendError(res,"This paste does not exist!");
     }
 })
 
@@ -105,7 +110,11 @@ app.get("/:url", (req, res) => {
     let path = __dirname + "/pastes/" + req.params.url
     if(fs.existsSync(path)) {
         let data = JSON.parse(fs.readFileSync(path));
-        res.send("this is not raw but something else : " + data.content + " visits : " + data.visit + " expiration : " + data.expiration + " title : " + data.title);
+        //res.send("this is not raw but something else : " + data.content + " visits : " + data.visit + " expiration : " + data.expiration + " title : " + data.title);
+        let template = fs.readFileSync(__dirname + "/public/paste.html").toString();
+        template = template.replace("{title}", data.title);
+        template = template.replace("{title}", data.title);
+        res.send(template)
         data.visit += 1;
         fs.writeFileSync(path, JSON.stringify(data));  
         if(data.expiration == "onetime"){
@@ -113,8 +122,8 @@ app.get("/:url", (req, res) => {
                 fs.unlinkSync(path);
             }
         }   
-    }else{
-        res.send("This paste doesn't exist");
+    }else{  
+        sendError(res,"This paste does not exist!");
     }
 
 })
