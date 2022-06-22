@@ -52,15 +52,15 @@ function makeid(length) {
 
 app.post("/paste", (req, res) => {
     if(req.body === null){
-        return res.send("error");
+        return res.send("error body");
     }
-    if(req.body.pasteContent == null|| req.body.pasteExpiration == null || req.body.csrf == null){
+    if(req.body.pasteContent == null|| req.body.pasteExpiration == null || req.body.csrf == null || req.body.pasteTitle == null){
         return res.send("error");
     }
     if(crsfs.includes(req.body.csrf)){
         crsfs.slice(crsfs.indexOf(req.body.csrf), 1)
     }else{
-        return res.send("error");
+        return res.send("error csrf");
     }
 
     let url = makeid(5);
@@ -68,11 +68,13 @@ app.post("/paste", (req, res) => {
         url: url,
         content: req.body.pasteContent,
         expiration: req.body.pasteExpiration,
-        visit:0
+        visit:0,
+        title: req.body.pasteTitle
     }
+
     fs.writeFile(__dirname + '/pastes/' + url, JSON.stringify(data), function (err,data) {
         if (err) {
-            res.send("error")
+            res.send("error write file");
             return console.log(err); 
         }
         res.redirect("/" + url);
@@ -81,7 +83,7 @@ app.post("/paste", (req, res) => {
 });
 
 
-app.get("/:url", (req, res) => {
+app.get("/raw/:url", (req, res) => {
     res.type("text/plain");
     let path = __dirname + "/pastes/" + req.params.url
     if(fs.existsSync(path)) {
@@ -97,6 +99,24 @@ app.get("/:url", (req, res) => {
     }else{
         res.send("This paste doesn't exist");
     }
+})
+
+app.get("/:url", (req, res) => {
+    let path = __dirname + "/pastes/" + req.params.url
+    if(fs.existsSync(path)) {
+        let data = JSON.parse(fs.readFileSync(path));
+        res.send("this is not raw but something else : " + data.content + " visits : " + data.visit + " expiration : " + data.expiration + " title : " + data.title);
+        data.visit += 1;
+        fs.writeFileSync(path, JSON.stringify(data));  
+        if(data.expiration == "onetime"){
+            if(data.visit > 1) {
+                fs.unlinkSync(path);
+            }
+        }   
+    }else{
+        res.send("This paste doesn't exist");
+    }
+
 })
 
 app.get("/assets/:name", (req, res) => {
