@@ -4,6 +4,7 @@ const app = express();
 app.use(express.urlencoded({extended:true})) //magic
 const hashmap = require('hashmap');
 const ips = new hashmap()
+const crsfs = []
 require("dotenv").config(".env")
 
 app.use(function (req, res, next) {
@@ -23,7 +24,7 @@ app.use(function (req, res, next) {
        
     last = ips.get(ip)
 
-    if(performance.now() - last >= 20000){
+    if(performance.now() - last >= 5000){
         ips.set(ip, performance.now())
         next();
     }else{
@@ -32,8 +33,12 @@ app.use(function (req, res, next) {
   });
 
 app.get("/", (req, res) => {
-    res.sendFile(__dirname + "/public/index.html");
+    let csrf = makeid(10)
+    crsfs.push(csrf)
+    let data = fs.readFileSync(__dirname + "/public/index.html").toString().replace("{csrf}", csrf)
+    res.send(data)
 });
+
 
 function makeid(length) {
     var result           = '';
@@ -49,10 +54,12 @@ app.post("/paste", (req, res) => {
     if(req.body === null){
         return res.send("error");
     }
-    if(req.body.pasteContent === null){
+    if(req.body.pasteContent == null|| req.body.pasteExpiration == null || req.body.csrf == null){
         return res.send("error");
     }
-    if(req.body.pasteExpiration === null){
+    if(crsfs.includes(req.body.csrf)){
+        crsfs.slice(crsfs.indexOf(req.body.csrf), 1)
+    }else{
         return res.send("error");
     }
 

@@ -19,6 +19,7 @@
             <option value="never">Never expire</option>
         </select>
         <textarea required="required" id="pasteContent" class="text" name="pasteContent" spellcheck="false"></textarea>
+        <input name="csrf" hidden value="{csrf}">
     </form>
 
     <script>document.getElementById("pasteContent").innerHTML = "";</script>
