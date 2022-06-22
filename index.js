@@ -113,7 +113,6 @@ app.get("/:url", (req, res) => {
         //res.send("this is not raw but something else : " + data.content + " visits : " + data.visit + " expiration : " + data.expiration + " title : " + data.title);
         let template = fs.readFileSync(__dirname + "/public/paste.html").toString();
         template = template.replace("{title}", data.title);
-        template = template.replace("{title}", data.title);
         res.send(template)
         data.visit += 1;
         fs.writeFileSync(path, JSON.stringify(data));  
